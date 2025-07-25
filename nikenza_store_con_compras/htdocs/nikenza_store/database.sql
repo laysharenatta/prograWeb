@@ -61,3 +61,45 @@ INSERT INTO paquetes (name, description, price, items, featured) VALUES
 ('Paquete Potterhead', 'Paquete temático de Harry Potter', 635.00, '["1 Playera deportiva Dryfit con diseño de Quidditch", "1 Termo cafetero con asa y escudo de Hogwarts", "1 Llavero de acero con impresión frente y vuelta", "Diseño de tu casa de Hogwarts y fecha de cumpleaños"]', FALSE)
 ON DUPLICATE KEY UPDATE name = name;
 
+
+
+-- Tabla para almacenar los pedidos/compras
+CREATE TABLE IF NOT EXISTS pedidos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    total DECIMAL(10, 2) NOT NULL,
+    estado ENUM('pendiente', 'procesando', 'completado', 'cancelado') DEFAULT 'pendiente',
+    nombre_cliente VARCHAR(100) NOT NULL,
+    email_cliente VARCHAR(100) NOT NULL,
+    telefono_cliente VARCHAR(20),
+    direccion_entrega TEXT,
+    notas TEXT,
+    fecha_pedido TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    INDEX idx_usuario_id (usuario_id),
+    INDEX idx_estado (estado),
+    INDEX idx_fecha_pedido (fecha_pedido)
+);
+
+-- Tabla para almacenar los detalles de cada pedido
+CREATE TABLE IF NOT EXISTS detalles_pedido (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    pedido_id INT NOT NULL,
+    producto_id INT NOT NULL,
+    cantidad INT NOT NULL DEFAULT 1,
+    precio_unitario DECIMAL(10, 2) NOT NULL,
+    subtotal DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (pedido_id) REFERENCES pedidos(id) ON DELETE CASCADE,
+    FOREIGN KEY (producto_id) REFERENCES productos(id) ON DELETE CASCADE,
+    INDEX idx_pedido_id (pedido_id),
+    INDEX idx_producto_id (producto_id)
+);
+
+-- Insertar algunos productos de ejemplo para pruebas
+INSERT INTO productos (name, description, price, category, features, image_icon, active) VALUES
+('Taza Personalizada Premium', 'Taza de cerámica de alta calidad con diseño personalizado', 25.99, 'tazas', '["Cerámica premium", "Diseño personalizado", "Apta para microondas", "Resistente al lavavajillas"]', 'fas fa-mug-hot', 1),
+('Sudadera Corporativa', 'Sudadera con capucha para uniformes corporativos', 45.50, 'sudaderas', '["Algodón 100%", "Bordado incluido", "Tallas S-XXL", "Colores personalizables"]', 'fas fa-tshirt', 1),
+('Tapete Antideslizante', 'Tapete personalizado con logo empresarial', 35.00, 'tapetes', '["Material antideslizante", "Impresión de alta calidad", "Resistente al agua", "Fácil limpieza"]', 'fas fa-home', 1),
+('Uniforme Completo', 'Set completo de uniforme empresarial', 89.99, 'uniformes', '["Camisa + Pantalón", "Telas de calidad", "Bordado incluido", "Tallas completas"]', 'fas fa-user-tie', 1);
+

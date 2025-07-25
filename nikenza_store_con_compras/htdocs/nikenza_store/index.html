@@ -23,22 +23,24 @@
                 <ul class="nav-menu">
                     <li><a href="#inicio">Inicio</a></li>
                     <li><a href="#productos">Productos</a></li>
-                    <li><a href="#paquetes">Paquetes</a></li>
-                    <li><a href="#contacto">Contacto</a></li>
-                </ul>
-                <div class="auth-buttons" id="authButtons">
-                    <button class="btn btn-outline" onclick="showLoginModal()">Iniciar Sesión</button>
-                    <button class="btn btn-primary" onclick="showRegisterModal()">Registrarse</button>
+                    <li><a hr                <div class="auth-buttons" id="authButtons">
+                    <button class="btn btn-outline" onclick="showLoginModal()">
+                        <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                    </button>
+                    <button class="btn btn-primary" onclick="showRegisterModal()">
+                        <i class="fas fa-user-plus"></i> Registrarse
+                    </button>
                 </div>
                 <div class="user-menu" id="userMenu" style="display: none;">
+                    <button class="btn btn-outline" onclick="showCart()" id="cartButton">
+                        <i class="fas fa-shopping-cart"></i> Carrito (<span id="cartCount">0</span>)
+                    </button>
                     <span class="user-greeting" id="userGreeting"></span>
                     <div class="user-dropdown">
-                        <button class="btn btn-outline" id="adminPanelBtn" style="display: none;" onclick="showAdminPanel()">Panel Admin</button>
+                        <button class="btn btn-outline" onclick="showAdminPanel()" id="adminButton" style="display: none;">Panel Admin</button>
                         <button class="btn btn-outline" onclick="logout()">Cerrar Sesión</button>
                     </div>
-                </div>
-                <div class="hamburger">
-                    <span></span>
+                </div>                    <span></span>
                     <span></span>
                     <span></span>
                 </div>
@@ -79,89 +81,10 @@
             <h2 class="section-title">Nuestros Productos</h2>
             <p class="section-subtitle">Descubre nuestra amplia gama de productos personalizables</p>
 
-            <div class="productos-grid">
-                <!-- Tazas -->
-                <div class="producto-card">
-                    <div class="producto-image">
-                        <i class="fas fa-mug-hot"></i>
-                        <div class="producto-overlay">
-                            <span class="precio">Desde $85</span>
-                        </div>
-                    </div>
-                    <div class="producto-content">
-                        <h3>Tazas Personalizadas</h3>
-                        <ul class="producto-features">
-                            <li>Taza estándar de cerámica - $85</li>
-                            <li>Taza con asa de color - $95</li>
-                            <li>Taza mágica - $120</li>
-                            <li>Par de tazas corazón - $215</li>
-                            <li>Taza recta grande 444ml - $130</li>
-                        </ul>
-                        <button class="btn-producto">Personalizar</button>
-                    </div>
-                </div>
-
-                <!-- Tapetes -->
-                <div class="producto-card">
-                    <div class="producto-image">
-                        <i class="fas fa-home"></i>
-                        <div class="producto-overlay">
-                            <span class="precio">$300</span>
-                        </div>
-                    </div>
-                    <div class="producto-content">
-                        <h3>Tapete Afelpado</h3>
-                        <ul class="producto-features">
-                            <li>Tapete blanco afelpado suave</li>
-                            <li>Para interior, revés antideslizante</li>
-                            <li>Medida: 34 x 58 cm</li>
-                            <li>Impresión máxima: 30 x 43 cm</li>
-                            <li>Diseño personalizado</li>
-                        </ul>
-                        <button class="btn-producto">Personalizar</button>
-                    </div>
-                </div>
-
-                <!-- Sudaderas -->
-                <div class="producto-card">
-                    <div class="producto-image">
-                        <i class="fas fa-tshirt"></i>
-                        <div class="producto-overlay">
-                            <span class="precio">Desde $425</span>
-                        </div>
-                    </div>
-                    <div class="producto-content">
-                        <h3>Sudaderas</h3>
-                        <ul class="producto-features">
-                            <li>Sudadera sencilla - $425</li>
-                            <li>Sudadera con gorra - $500</li>
-                            <li>Algodón, sencilla, cerrada</li>
-                            <li>Cuello redondo</li>
-                            <li>Diseño personalizado</li>
-                        </ul>
-                        <button class="btn-producto">Personalizar</button>
-                    </div>
-                </div>
-
-                <!-- Uniformes -->
-                <div class="producto-card">
-                    <div class="producto-image">
-                        <i class="fas fa-user-tie"></i>
-                        <div class="producto-overlay">
-                            <span class="precio">Desde $195</span>
-                        </div>
-                    </div>
-                    <div class="producto-content">
-                        <h3>Camisas Uniforme</h3>
-                        <ul class="producto-features">
-                            <li>Gabardina peinada, muy durable</li>
-                            <li>Para dama y caballero</li>
-                            <li>Tallas: CH, M, G, EG, 2XL, 3XL, 4XL</li>
-                            <li>Frente: $195 - $535</li>
-                            <li>Frente y vuelta: $510 - $550</li>
-                        </ul>
-                        <button class="btn-producto">Personalizar</button>
-                    </div>
+            <div class="productos-grid" id="productosGrid">
+                <!-- Los productos se cargarán dinámicamente aquí -->
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i> Cargando productos...
                 </div>
             </div>
         </div>
@@ -589,18 +512,20 @@
                 updateUIForLoggedOutUser();
             }
         }
-        
-        function updateUIForLoggedInUser() {
+        function updateUIForLoggedInUser(user) {
+            currentUser = user;
             document.getElementById('authButtons').style.display = 'none';
             document.getElementById('userMenu').style.display = 'flex';
-            document.getElementById('userGreeting').textContent = `Hola, ${currentUser.username}`;
+            document.getElementById('userGreeting').textContent = `Hola, ${user.username}`;
             
-            if (currentUser.role === 'admin') {
-                document.getElementById('adminPanelBtn').style.display = 'block';
+            if (user.role === 'admin') {
+                document.getElementById('adminButton').style.display = 'inline-block';
             }
-        }
-        
-        function updateUIForLoggedOutUser() {
+            
+            // Cargar contador del carrito y recargar productos
+            loadCartCount();
+            loadProducts();
+        }function updateUIForLoggedOutUser() {
             document.getElementById('authButtons').style.display = 'flex';
             document.getElementById('userMenu').style.display = 'none';
             document.getElementById('adminPanelBtn').style.display = 'none';
@@ -710,6 +635,370 @@
         function showAdminPanel() {
             window.location.href = 'admin.html';
         }
+
+        // Funciones del carrito de compras
+        let cart = [];
+        let cartCount = 0;
+
+        async function loadProducts() {
+            try {
+                const response = await fetch('php/get_products.php');
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayProducts(data.productos);
+                } else {
+                    console.error('Error cargando productos:', data.error);
+                    document.getElementById('productosGrid').innerHTML = '<div class="error">Error cargando productos</div>';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('productosGrid').innerHTML = '<div class="error">Error de conexión</div>';
+            }
+        }
+
+        function displayProducts(productos) {
+            const container = document.getElementById('productosGrid');
+            
+            if (productos.length === 0) {
+                container.innerHTML = '<div class="loading">No hay productos disponibles</div>';
+                return;
+            }
+            
+            const html = productos.map(producto => `
+                <div class="producto-card">
+                    <div class="producto-image">
+                        <i class="${producto.image_icon || 'fas fa-box'}"></i>
+                        <div class="producto-overlay">
+                            <span class="precio">$${producto.price}</span>
+                        </div>
+                    </div>
+                    <div class="producto-content">
+                        <h3>${producto.name}</h3>
+                        <p class="producto-description">${producto.description || ''}</p>
+                        <ul class="producto-features">
+                            ${producto.features.map(feature => `<li>${feature}</li>`).join('')}
+                        </ul>
+                        <div class="producto-actions">
+                            ${currentUser ? `
+                                <button class="btn-producto" onclick="addToCart(${producto.id})">
+                                    <i class="fas fa-cart-plus"></i> Agregar al Carrito
+                                </button>
+                            ` : `
+                                <button class="btn-producto" onclick="showLoginModal()">
+                                    Iniciar Sesión para Comprar
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            container.innerHTML = html;
+        }
+
+        async function addToCart(productId) {
+            if (!currentUser) {
+                showLoginModal();
+                return;
+            }
+
+            try {
+                const response = await fetch('php/cart.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ product_id: productId, quantity: 1 })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateCartCount(data.cartCount);
+                    showMessage(`${data.product.name} agregado al carrito`, 'success');
+                } else {
+                    showMessage(data.error || 'Error agregando producto', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Error de conexión', 'error');
+            }
+        }
+
+        async function showCart() {
+            try {
+                const response = await fetch('php/cart.php');
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayCart(data.cart, data.total);
+                    document.getElementById('cartModal').style.display = 'flex';
+                } else {
+                    showMessage(data.error || 'Error cargando carrito', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Error de conexión', 'error');
+            }
+        }
+
+        function displayCart(cartItems, total) {
+            const container = document.getElementById('cartContent');
+            
+            if (cartItems.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-cart">
+                        <i class="fas fa-shopping-cart" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
+                        <p>Tu carrito está vacío</p>
+                        <button class="btn btn-primary" onclick="closeModal('cartModal')">Seguir Comprando</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            const html = `
+                <div class="cart-items">
+                    ${cartItems.map(item => `
+                        <div class="cart-item">
+                            <div class="cart-item-info">
+                                <i class="${item.image_icon || 'fas fa-box'}"></i>
+                                <div>
+                                    <h4>${item.name}</h4>
+                                    <p>$${item.price} c/u</p>
+                                </div>
+                            </div>
+                            <div class="cart-item-controls">
+                                <button onclick="updateCartQuantity(${item.id}, ${item.quantity - 1})">-</button>
+                                <span>${item.quantity}</span>
+                                <button onclick="updateCartQuantity(${item.id}, ${item.quantity + 1})">+</button>
+                                <button onclick="removeFromCart(${item.id})" class="remove-btn">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            <div class="cart-item-total">$${item.subtotal.toFixed(2)}</div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="cart-footer">
+                    <div class="cart-total">
+                        <h3>Total: $${total.toFixed(2)}</h3>
+                    </div>
+                    <div class="cart-actions">
+                        <button class="btn btn-secondary" onclick="clearCart()">Vaciar Carrito</button>
+                        <button class="btn btn-primary" onclick="showCheckout()">Proceder al Checkout</button>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+
+        async function updateCartQuantity(productId, newQuantity) {
+            try {
+                const response = await fetch('php/cart.php', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ product_id: productId, quantity: newQuantity })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateCartCount(data.cartCount);
+                    showCart(); // Recargar carrito
+                } else {
+                    showMessage(data.error || 'Error actualizando carrito', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Error de conexión', 'error');
+            }
+        }
+
+        async function removeFromCart(productId) {
+            try {
+                const response = await fetch('php/cart.php', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ product_id: productId })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateCartCount(data.cartCount);
+                    showCart(); // Recargar carrito
+                    showMessage(data.message, 'success');
+                } else {
+                    showMessage(data.error || 'Error eliminando producto', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Error de conexión', 'error');
+            }
+        }
+
+        async function clearCart() {
+            if (!confirm('¿Estás seguro de que quieres vaciar el carrito?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('php/cart.php', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({})
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateCartCount(0);
+                    showCart(); // Recargar carrito
+                    showMessage(data.message, 'success');
+                } else {
+                    showMessage(data.error || 'Error vaciando carrito', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Error de conexión', 'error');
+            }
+        }
+
+        async function showCheckout() {
+            try {
+                const response = await fetch('php/cart.php');
+                const data = await response.json();
+                
+                if (data.success && data.cart.length > 0) {
+                    displayCheckoutSummary(data.cart, data.total);
+                    closeModal('cartModal');
+                    document.getElementById('checkoutModal').style.display = 'flex';
+                    
+                    // Pre-llenar datos del usuario
+                    if (currentUser) {
+                        document.getElementById('checkoutEmail').value = currentUser.email || '';
+                    }
+                } else {
+                    showMessage('El carrito está vacío', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Error de conexión', 'error');
+            }
+        }
+
+        function displayCheckoutSummary(cartItems, total) {
+            const container = document.getElementById('checkoutSummary');
+            
+            const html = `
+                ${cartItems.map(item => `
+                    <div class="checkout-item">
+                        <span>${item.name} x ${item.quantity}</span>
+                        <span>$${item.subtotal.toFixed(2)}</span>
+                    </div>
+                `).join('')}
+                <div class="checkout-total">
+                    <strong>Total: $${total.toFixed(2)}</strong>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+
+        document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                nombre: document.getElementById('checkoutNombre').value,
+                email: document.getElementById('checkoutEmail').value,
+                telefono: document.getElementById('checkoutTelefono').value,
+                direccion: document.getElementById('checkoutDireccion').value,
+                notas: document.getElementById('checkoutNotas').value
+            };
+            
+            try {
+                const response = await fetch('php/checkout.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    closeModal('checkoutModal');
+                    updateCartCount(0);
+                    showMessage(`¡Compra realizada exitosamente! Número de pedido: ${data.pedido.id}`, 'success');
+                    document.getElementById('checkoutForm').reset();
+                } else {
+                    showMessage(data.error || 'Error procesando compra', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Error de conexión', 'error');
+            }
+        });
+
+        function updateCartCount(count) {
+            cartCount = count;
+            document.getElementById('cartCount').textContent = count;
+        }
+
+        async function loadCartCount() {
+            if (!currentUser) return;
+            
+            try {
+                const response = await fetch('php/cart.php');
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateCartCount(data.itemCount);
+                }
+            } catch (error) {
+                console.error('Error cargando contador del carrito:', error);
+            }
+        }
+
+        function showMessage(message, type) {
+            // Crear elemento de mensaje
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = message;
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                border-radius: 5px;
+                color: white;
+                font-weight: 500;
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+                background: ${type === 'success' ? '#10B981' : '#EF4444'};
+            `;
+            
+            document.body.appendChild(messageDiv);
+            
+            // Remover después de 3 segundos
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3000);
+        }
+
+        // Cargar productos al cargar la página
+        document.addEventListener("DOMContentLoaded", () => {
+            loadProducts();
+        });
     </script>
     
     <!-- Modal de Login -->
@@ -763,6 +1052,61 @@
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">Registrarse</button>
                     <button type="button" class="btn btn-secondary" onclick="closeModal('registerModal')">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal del Carrito -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2>Carrito de Compras</h2>
+                <span class="close" onclick="closeModal('cartModal')">&times;</span>
+            </div>
+            <div id="cartContent">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i> Cargando carrito...
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de Checkout -->
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2>Finalizar Compra</h2>
+                <span class="close" onclick="closeModal('checkoutModal')">&times;</span>
+            </div>
+            <form id="checkoutForm">
+                <div class="form-group">
+                    <label for="checkoutNombre">Nombre Completo:</label>
+                    <input type="text" id="checkoutNombre" required>
+                </div>
+                <div class="form-group">
+                    <label for="checkoutEmail">Email:</label>
+                    <input type="email" id="checkoutEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="checkoutTelefono">Teléfono:</label>
+                    <input type="tel" id="checkoutTelefono" required>
+                </div>
+                <div class="form-group">
+                    <label for="checkoutDireccion">Dirección de Entrega:</label>
+                    <textarea id="checkoutDireccion" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="checkoutNotas">Notas Adicionales:</label>
+                    <textarea id="checkoutNotas" rows="2" placeholder="Instrucciones especiales, colores preferidos, etc."></textarea>
+                </div>
+                <div class="checkout-summary">
+                    <h3>Resumen del Pedido</h3>
+                    <div id="checkoutSummary"></div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Confirmar Compra</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('checkoutModal')">Cancelar</button>
                 </div>
             </form>
         </div>
